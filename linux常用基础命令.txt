@@ -1,0 +1,324 @@
+# Linux
+
+Linux 是一个操作系统(OS)
+
+1. 山寨版本的Unix
+2. Linux 使用非常广泛
+3. Linux 是开源系统, 来源GNU
+	- GNU 一个最著名的开源组织
+4. Linux 由 一个内核 和 很多外围软件组成
+	- 内核来自 linux.org 外围软件来自 GNU
+
+## Linux 命令
+
+语法:
+
+	命令 -选项1选项2 参数1 参数2 
+
+> 命令和选项参数之间必须有空格, 可能有多个选项和参数
+
+### 文件系统管理
+
+列目录命令
+
+	ls -la \
+
+	-l 使用长格式, 显示文件/文件夹的详细信息
+	-a 显示全部信息, 包含隐藏(以.为开头的)的文件/文件夹
+
+查询帮助手册命令 man
+
+	man ls
+	使用 q 退出帮助手册
+
+打印当前工作目录
+
+	pwd
+
+	命令的默认操作目录
+
+创建文件夹命令
+
+	mkdir ok  //在当前工作目录中创建文件夹 ok 
+	ls  //显示当前工作目录中的内容
+
+创建文件命令 touch(摸)
+
+	touch  abc.txt
+	ls
+
+修改文件/文件夹的时间 touch(摸)
+
+	touch 已经存在文件/文件夹
+	ls -l
+
+删除命令 rm
+
+	rm -rf 文件1  文件2  文件夹1 文件夹2 
+	rm 文件1 文件2 文件3 ... //删除系列文件
+	rm -rf 文件夹1 文件夹2 ... //递归强制删除文件夹
+
+	-r 递归, 删除父子文件夹
+	-f 强迫, 删除文件时候不进行确认操作
+
+	rm -rf ok
+	rm abc.txt def.txt
+		
+移动 文件/文件夹 mv
+
+	mv 被移动的文件/文件夹  目标文件 
+
+![](img/mv1.png)
+
+改名 mv
+
+	mv 被改名的文件夹/文件  新名称
+
+![](img/mv2.png)
+
+复制 cp 
+
+	cp  源文件  目标文件  // 将源文件复制为新的目标文件
+	cp  源文件  目标文件夹 // 将源文件复制到目标文件, 文件名相同
+	cp -r 源文件夹 新文件夹 // 递归复制源文件夹为新文件夹
+	cp -r 源文件夹 目标文件夹 // 递归复制源文件夹到目标文件中, 
+								目标文件夹中创建源文件夹同名文件夹
+	cp /etc/passwd passwd.bak
+	cp /etc/passwd ok 
+	cp -r ok def 
+	cp -r workspace workspace_bak
+	mkdir backup
+	cp -r workspace backup
+
+改变工作目录命令cd
+
+	cd 目录名
+
+### 远程登录
+
+ssh 命令用于远程登录, 服务器端要运行sshd进程
+
+ssh 原理:
+
+![](img/ssh.png)
+
+
+1. 检查服务器上正在运行的sshd进程
+
+		ps -A|grep sshd
+
+2. 检查服务器的IP地址
+	
+		ip addr
+		ifconfig 
+
+客户端连接:
+
+	ssh 用户名@IP/域名
+
+	第一次需要确认证书
+	需要输入密码
+
+登录以后就可以远程操作服务器了.
+
+### 文件传输
+
+ssh服务不仅提供了远程登录还提供了远程文件传输功能:
+
+![](img/sftp.png)
+
+命令:
+
+	sftp 用户名@IP/域名
+
+sftp登录以后执行的命令是ftp命令, 不是操作系统命令:
+
+	help
+	ls  //显示远程文件夹内容
+	pwd //显示远程文件夹名
+	cd  //更改远程当前文件夹
+	lls //显示本地文件夹内容
+	lcd //更改本地当前文件夹
+	put 文件名  //文件上载命令
+	get 文件名  //文件下载命令
+
+
+### 防火墙操作
+
+在Centos7中开启 22 端口方法如下:
+	
+	su  //切换身份为管理员root用户,需要输入管理员的password:盲敲
+	firewall-cmd --permanent --add-port=22/tcp
+	firewall-cmd --reload
+
+### Windows 客户端 SSH
+
+windows 上可以利用SSH工具登录到 Linux服务器:
+
+1. Eclipse 内嵌了一个SSH客户端
+2. putty 
+3. BvSshClient 
+4. ... SSH Client
+ 
+### 文件打包命令
+
+打包命令:
+
+	tar -czvf 包名.tar.gz  文件夹1 文件夹2 ...
+	-c 创建包(只打包不压缩), 建议使用扩展名 .tar
+	-z 创建包以后, 利用gzip算法进行压缩, 建议使用扩展名 .tar.gz
+	-v 显示打包的过程, 哪些文件被打包了. 性能慢
+	-f 输出的目标包的文件名
+
+	参数是被打包的文件夹/文件名
+	
+	ls
+	tar -czvf workspace.tar.gz workspace
+	ls
+
+释放命令
+
+	tar -xzvf 包名.tar.gz
+
+	-x 释放, 将包中的内容释放当前文件夹中
+	-z 释放之前先利用gzip进行解压缩操作, 只有利用gzip压缩的 .gz文件才需要使用这个选项. 如果释放没有压缩的tar文件, 不需要这个参数
+	-v 显示释放过程
+	-f 指定被释放的包名
+
+	mkdir test
+	cd test
+	tar -zxvf ../workspace.tar.gz
+	ls
+
+检查文件夹占用硬盘空间大小
+
+	du -sh  文件夹
+
+## 阿里云ECS服务
+
+阿里云ECS服务器是虚拟化的云服务器(大型服务器的一部分), 使用感受和物理服务器一样. 
+
+其他云服务器厂商也提供了类似的云服务器.这里不再复述.
+
+购买建议: 
+
+1. 计费方式: 包年包月 即可, 试验阶段购买1周即可
+2. 地域: 国内任意位置, 如果有多台服务器, 应该购买在一个机房中. 这样访问迅速
+3. 实例: 入门型服务器, 1CPU, 0.5G内存. 土豪请随意.
+	- 如果日后发现性能不行, 可以随时续费升级扩充配置
+4. 镜像: 就是安装的操作系统
+	- 如果是试验学习, 可以选择公共镜像, Centos 7 操作系统
+	- Centos是国内使用最多的系统.
+	- 也可以选项Windows系统, 没有学习价值
+	- 其他镜像都是预先配置好的系统, 不适合学习, 不推荐使用.
+5. 存储: 40G即可, 以后可以升级配置
+6. 网络: 选择专有网络即可, 可以配置虚拟网络系统.
+7. 公网带宽: 为了学习目的, 选择1M即可. 一定选择分配公网IP, 方便远程访问.
+8. 安全组:　就是防火墙, 可以开放网络对外服务端口, 如果不开放就不能访问
+	- 22 端口用与SSH登录
+	- 80 端口用于http服务
+	- 8080 端口用于tomcat, 这个端口默认没有开放
+9. 登录凭证: 选择密码, 并且提供密码.
+10. 实例名称和主机名: 建议给定, 方便管理识别服务器. 
+11. 资源组:　忽略
+12. 购买周期: 根据需要选择购买周期, 试验阶段可以选择一周或者一个月
+
+Good Luck!
+
+管理:
+
+1. 购买后可以在服务器的控制台上获得服务器的公网IP
+2. 利用SSH登录管理服务器.
+
+### 下载命令
+
+命令:
+
+	wget 资源url
+	
+	//下载JDK:
+ 	wget http://124.202.164.15/files/116700000B429E7F/download.oracle.com/otn-pub/java/jdk/8u161-b12/2f38c3b165be4555a1fa6e98c45e0808/jdk-8u161-linux-x64.tar.gz
+
+## Linux Java 配置
+
+步骤:
+
+1. 从Oracle网站下载 JDK 
+	- Linux x64	jdk-8u161-linux-x64.tar.gz
+	- 可以利用 wget 命令下载
+2. 释放...
+	- tar -zxf jdk-8u161-linux-x64.tar.gz
+3. 配置环境变量
+	- PATH       操作系统命令的搜索路径
+	- CLASSPATH  Java 类搜索路径, 可以设置为 .
+	- JAVA_HOME  Java的安装目录
+
+安装配置案例:
+
+	cd
+	wget http://....jdk-8u161-linux-x64.tar.gz
+	cd /usr/local
+	mkdir java
+	cd java
+	tar -xzf ~/jdk-8u161-linux-x64.tar.gz
+	// jdk1.8.0_161
+	export JAVA_HOME=/usr/local/java/jdk1.8.0_161
+	export PATH=/usr/local/java/jdk1.8.0_161/bin:$PATH
+	export CLASSPATH=.
+
+### PATH 环境变量
+
+PATH: 操作系统命令的搜索路径, 在操作系统执行命令时候, 按照顺序搜索PATH变量中的系列路径, 如果搜索到命令, 就执行命令, 否则出现命令没有找到错误.
+
+可以修改PATH, 为操作系统扩展新命令. 
+
+安装Java以后, 将java命令所在的文件夹扩展到PATH变量中, 可以为操作系统扩展Java相关的命令!
+
+修改环境变量的命令 export
+
+	export 变量名=变量值
+
+	export PATH=/usr/local/java/jdk1.8.0_161/bin:$PATH	
+	$PATH 读取了以前PATH变量的值  
+
+
+
+ip: 47.104.181.74 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+vim
+
+
+192.168.28.163
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+ 
+ 
+
